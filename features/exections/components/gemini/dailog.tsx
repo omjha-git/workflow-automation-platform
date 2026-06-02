@@ -3,7 +3,14 @@
 import Image from "next/image";
 import { useEffect } from "react";
 import { z } from "zod";
-import { CredentialType } from "@prisma/client";
+const CredentialType = {
+  OPENAI: "OPENAI",
+  ANTHROPIC: "ANTHROPIC",
+  GEMINI: "GEMINI",
+  DISCORD: "DISCORD",
+  WHATSAPP: "WHATSAPP",
+  STRIPE: "STRIPE",
+} as const;
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 

@@ -1,6 +1,14 @@
 import type { NodeTypes } from "@xyflow/react";
-
-import { NodeType } from "@prisma/client";
+const NodeType = {
+  INITIAL: "INITIAL",
+  MANUAL_TRIGGER: "MANUAL_TRIGGER",
+  GOOGLE_FORM_TRIGGER: "GOOGLE_FORM_TRIGGER",
+  STRIPE_TRIGGER: "STRIPE_TRIGGER",
+  HTTP_REQUEST: "HTTP_REQUEST",
+  GEMINI: "GEMINI",
+  DISCORD: "DISCORD",
+  WHATSAPP: "WHATSAPP",
+} as const;
 
 import { InitialNode } from "../components/initial-node";
 
