@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
-import { NodeType } from "@prisma/client";
 import {
   ReactFlow,
   Background,
@@ -32,6 +31,17 @@ import { NodeSelector } from "@/components/node-selector";
 import { useSetAtom } from "jotai";
 import { editorAtom } from "../store/atoms";
 import { ExecuteWorkflowButton } from "./execute-workflow-button";
+
+const NodeType = {
+  INITIAL: "INITIAL",
+  MANUAL_TRIGGER: "MANUAL_TRIGGER",
+  GOOGLE_FORM_TRIGGER: "GOOGLE_FORM_TRIGGER",
+  STRIPE_TRIGGER: "STRIPE_TRIGGER",
+  HTTP_REQUEST: "HTTP_REQUEST",
+  GEMINI: "GEMINI",
+  DISCORD: "DISCORD",
+  WHATSAPP: "WHATSAPP",
+} as const;
 
 type WorkflowEditorData = {
   id: string;
@@ -96,8 +106,7 @@ export const Editor = ({
 
   const hasManualTrigger = useMemo(() => {
     return nodes.some(
-      (node) =>
-        node.type === NodeType.MANUAL_TRIGGER
+      (node) => node.type === NodeType.MANUAL_TRIGGER
     );
   }, [nodes]);
 
@@ -126,16 +135,12 @@ export const Editor = ({
           <MiniMap />
 
           <Panel position="top-right">
-            <AddNodeButton
-              onClick={() => setOpen(true)}
-            />
+            <AddNodeButton onClick={() => setOpen(true)} />
           </Panel>
 
           {hasManualTrigger && (
             <Panel position="bottom-right">
-              <ExecuteWorkflowButton
-                workflowId={workflowId}
-              />
+              <ExecuteWorkflowButton workflowId={workflowId} />
             </Panel>
           )}
 
