@@ -132,6 +132,9 @@ enum CredentialType {
   OPENAI
   ANTHROPIC
   GEMINI
+  DISCORD
+  WHATSAPP
+  STRIPE
 }
 
 enum NodeType {

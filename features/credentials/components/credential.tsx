@@ -1,6 +1,5 @@
 "use client";
 
-import { CredentialType } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -11,6 +10,7 @@ import {
   useUpdateCredential,
 } from "../hooks/use-credentials";
 
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -18,7 +18,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-
 import {
   Form,
   FormControl,
@@ -27,7 +26,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -36,13 +35,21 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+const credentialTypes = [
+  "OPENAI",
+  "ANTHROPIC",
+  "GEMINI",
+  "DISCORD",
+  "WHATSAPP",
+  "STRIPE",
+] as const;
+
+type CredentialTypeValue = (typeof credentialTypes)[number];
 
 const formSchema = z.object({
   name: z.string().min(1, "Name is required"),
-  type: z.nativeEnum(CredentialType),
-  value: z.string().min(1, "API key is required"),
+  type: z.enum(credentialTypes),
+  value: z.string().min(1, "Credential value is required"),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -51,7 +58,7 @@ interface CredentialFormProps {
   initialData?: {
     id?: string;
     name: string;
-    type: CredentialType;
+    type: CredentialTypeValue;
     value: string;
   };
 }
@@ -66,9 +73,9 @@ export const CredentialForm = ({ initialData }: CredentialFormProps) => {
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: initialData || {
+    defaultValues: initialData ?? {
       name: "",
-      type: CredentialType.GEMINI,
+      type: "GEMINI",
       value: "",
     },
   });
@@ -78,10 +85,16 @@ export const CredentialForm = ({ initialData }: CredentialFormProps) => {
       if (isEdit && initialData?.id) {
         await updateCredential.mutateAsync({
           id: initialData.id,
-          ...values,
+          name: values.name,
+          type: values.type,
+          value: values.value,
         });
       } else {
-        await createCredential.mutateAsync(values);
+        await createCredential.mutateAsync({
+          name: values.name,
+          type: values.type,
+          value: values.value,
+        });
       }
 
       router.push("/credentials");
@@ -101,9 +114,7 @@ export const CredentialForm = ({ initialData }: CredentialFormProps) => {
           {isEdit ? "Edit Credential" : "Create Credential"}
         </CardTitle>
         <CardDescription>
-          {isEdit
-            ? "Update your Gemini API key"
-            : "Add your Gemini API key to your account"}
+          Add or update credentials used by workflow nodes.
         </CardDescription>
       </CardHeader>
 
@@ -121,7 +132,7 @@ export const CredentialForm = ({ initialData }: CredentialFormProps) => {
                   <FormLabel>Name</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="Gemini API Key"
+                      placeholder="My Gemini API Key"
                       disabled={isPending}
                       {...field}
                     />
@@ -138,9 +149,9 @@ export const CredentialForm = ({ initialData }: CredentialFormProps) => {
                 <FormItem>
                   <FormLabel>Type</FormLabel>
                   <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
                     disabled={isPending}
+                    value={field.value}
+                    onValueChange={field.onChange}
                   >
                     <FormControl>
                       <SelectTrigger className="w-full">
@@ -149,9 +160,14 @@ export const CredentialForm = ({ initialData }: CredentialFormProps) => {
                     </FormControl>
 
                     <SelectContent>
-                      <SelectItem value={CredentialType.GEMINI}>
-                        Gemini
+                      <SelectItem value="OPENAI">OpenAI</SelectItem>
+                      <SelectItem value="ANTHROPIC">
+                        Anthropic
                       </SelectItem>
+                      <SelectItem value="GEMINI">Gemini</SelectItem>
+                      <SelectItem value="DISCORD">Discord</SelectItem>
+                      <SelectItem value="WHATSAPP">WhatsApp</SelectItem>
+                      <SelectItem value="STRIPE">Stripe</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -164,11 +180,11 @@ export const CredentialForm = ({ initialData }: CredentialFormProps) => {
               name="value"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Gemini API Key</FormLabel>
+                  <FormLabel>Value</FormLabel>
                   <FormControl>
                     <Input
                       type="password"
-                      placeholder="Enter Gemini API key"
+                      placeholder="Enter API key, token, or webhook URL"
                       disabled={isPending}
                       {...field}
                     />

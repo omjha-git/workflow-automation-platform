@@ -6,7 +6,14 @@ import {
    baseProcedure,
 } from "@/trpc/init";
 
-const credentialTypes = ["OPENAI", "ANTHROPIC", "GEMINI"] as const;
+const credentialTypes = [
+  "OPENAI",
+  "ANTHROPIC",
+  "GEMINI",
+  "DISCORD",
+  "WHATSAPP",
+  "STRIPE",
+] as const;
 
 export const credentialsRouter = createTRPCRouter({
   create: protectedProcedure

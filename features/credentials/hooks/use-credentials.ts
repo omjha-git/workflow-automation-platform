@@ -8,11 +8,16 @@ import {
   useQueryClient,
   useSuspenseQuery,
 } from "@tanstack/react-query";
+
 import { useCredentialsParams } from "./use-credentials-params";
 
-type CredentialType = "OPENAI" | "ANTHROPIC" | "GEMINI";
-
-
+type CredentialType =
+  | "OPENAI"
+  | "ANTHROPIC"
+  | "GEMINI"
+  | "DISCORD"
+  | "WHATSAPP"
+  | "STRIPE";
 
 export const useSuspenseCredentials = () => {
   const trpc = useTRPC();
@@ -99,9 +104,7 @@ export const useUpdateCredential = () => {
   );
 };
 
-export const useCredentialsByType = (
-  type: CredentialType
-) => {
+export const useCredentialsByType = (type: CredentialType) => {
   const trpc = useTRPC();
 
   return useQuery(
