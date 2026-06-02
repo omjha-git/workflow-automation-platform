@@ -31,7 +31,12 @@ import {
   EntityItem,
 } from "./entity-components";
 
-
+type WorkflowItem = {
+  id: string;
+  name: string;
+  createdAt: Date | string;
+  updatedAt: Date | string;
+};
 
 export const WorkflowsSearch = () => {
   const [params, setParams] = useWorkflowsParams();
@@ -54,49 +59,33 @@ export const WorkflowsList = () => {
   const removeWorkflow = useRemoveWorkflow();
   const workflows = useSuspenseWorkflows();
 
-  if (workflows.data.items.length === 0) {
+  const items = workflows.data.items as WorkflowItem[];
+
+  if (items.length === 0) {
     return <WorkflowsEmpty />;
   }
 
   return (
     <EntityList
-      items={workflows.data.items}
+      items={items}
       emptyView={<WorkflowsEmpty />}
-      getKey={(workflow) => workflow.id}
-      renderItem={(workflow) => (
+      getKey={(workflow: WorkflowItem) => workflow.id}
+      renderItem={(workflow: WorkflowItem) => (
         <EntityItem
           href={`/workflows/${workflow.id}`}
           title={workflow.name}
           subtitle={
             <>
               Updated{" "}
-              {new Date(
-                workflow.updatedAt
-              ).toLocaleDateString()}
+              {new Date(workflow.updatedAt).toLocaleDateString()}
               {" • "}
               Created{" "}
-              {new Date(
-                workflow.createdAt
-              ).toLocaleDateString()}
+              {new Date(workflow.createdAt).toLocaleDateString()}
             </>
           }
           image={
-            <div
-              className="
-                size-8
-                rounded-md
-                border
-                flex
-                items-center
-                justify-center
-              "
-            >
-              <WorkflowIcon
-                className="
-                  size-4
-                  text-muted-foreground
-                "
-              />
+            <div className="size-8 rounded-md border flex items-center justify-center">
+              <WorkflowIcon className="size-4 text-muted-foreground" />
             </div>
           }
           actions={
@@ -107,34 +96,25 @@ export const WorkflowsList = () => {
               }}
             >
               <DropdownMenu>
-                <DropdownMenuTrigger
-                  className="
-                    inline-flex
-                    size-8
-                    items-center
-                    justify-center
-                    rounded-md
-                    hover:bg-muted
-                  "
-                >
+                <DropdownMenuTrigger className="inline-flex size-8 items-center justify-center rounded-md hover:bg-muted">
                   <MoreVerticalIcon className="size-4" />
                 </DropdownMenuTrigger>
 
                 <DropdownMenuContent align="end">
                   <DropdownMenuItem
-  className="text-destructive"
-  onClick={(e) => {
-    e.preventDefault();
-    e.stopPropagation();
+                    className="text-destructive"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
 
-    removeWorkflow.mutate({
-      id: workflow.id,
-    });
-  }}
->
-  <TrashIcon className="mr-2 size-4" />
-  Delete
-</DropdownMenuItem>
+                      removeWorkflow.mutate({
+                        id: workflow.id,
+                      });
+                    }}
+                  >
+                    <TrashIcon className="mr-2 size-4" />
+                    Delete
+                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
@@ -144,6 +124,7 @@ export const WorkflowsList = () => {
     />
   );
 };
+
 export const WorkflowsHeader = ({
   disabled,
 }: {
