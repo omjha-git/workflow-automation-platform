@@ -1,4 +1,3 @@
-import { NodeType } from "@prisma/client";
 import { NonRetriableError } from "inngest";
 
 import { inngest } from "./client";
@@ -12,6 +11,20 @@ import { googleFormTriggerChannel } from "./channels/google-form-trigger";
 import { stripeTriggerChannel } from "./channels/stripe-trigger";
 import { geminiChannel } from "./channels/gemini";
 import { discordChannel } from "./channels/discord";
+
+const NodeType = {
+  INITIAL: "INITIAL",
+  MANUAL_TRIGGER: "MANUAL_TRIGGER",
+  GOOGLE_FORM_TRIGGER: "GOOGLE_FORM_TRIGGER",
+  STRIPE_TRIGGER: "STRIPE_TRIGGER",
+  HTTP_REQUEST: "HTTP_REQUEST",
+  GEMINI: "GEMINI",
+  DISCORD: "DISCORD",
+  WHATSAPP: "WHATSAPP",
+} as const;
+
+type NodeTypeValue =
+  (typeof NodeType)[keyof typeof NodeType];
 
 export const executeWorkflow = inngest.createFunction(
   {
@@ -93,7 +106,7 @@ export const executeWorkflow = inngest.createFunction(
       for (const node of sortedNodes) {
         console.log("Executing node:", node.type, node.id);
 
-        const executor = getExecutor(node.type as NodeType);
+        const executor = getExecutor(node.type as NodeTypeValue);
 
         context = await step.run(
           `execute-${node.type}-${node.id}`,
