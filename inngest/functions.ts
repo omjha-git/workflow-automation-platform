@@ -74,11 +74,11 @@ export const executeWorkflow = inngest.createFunction(
 
         console.log(
           "DB NODES:",
-          workflow.nodes.map((node) => ({
-            id: node.id,
-            type: node.type,
-            data: node.data,
-          }))
+          workflow.nodes.map((node: any) => ({
+  id: node.id,
+  type: node.type,
+  data: node.data,
+}))
         );
 
         console.log("DB CONNECTIONS:", workflow.connections);
@@ -90,11 +90,11 @@ export const executeWorkflow = inngest.createFunction(
 
         console.log(
           "Sorted nodes:",
-          nodes.map((node) => ({
-            id: node.id,
-            type: node.type,
-            data: node.data,
-          }))
+          nodes.map((node: any) => ({
+  id: node.id,
+  type: node.type,
+  data: node.data,
+}))
         );
 
         return nodes;
