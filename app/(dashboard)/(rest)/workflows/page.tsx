@@ -9,11 +9,11 @@ import { LoadingView } from "@/features/workflows/components/entity-components";
 
 const Page = () => {
   return (
-    <WorkflowsContainer>
-      <Suspense fallback={<LoadingView message="Loading workflows..." />}>
+    <Suspense fallback={<LoadingView message="Loading workflows..." />}>
+      <WorkflowsContainer>
         <WorkflowsList />
-      </Suspense>
-    </WorkflowsContainer>
+      </WorkflowsContainer>
+    </Suspense>
   );
 };
 
