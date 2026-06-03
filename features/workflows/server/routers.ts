@@ -1,8 +1,7 @@
 import { z } from "zod";
 import type { Node, Edge } from "@xyflow/react";
 import { generateSlug } from "random-word-slugs";
-import { Prisma, NodeType } from "@prisma/client";
-
+import { NodeType } from "@prisma/client";
 import prisma from "@/lib/db";
 import { PAGINATION } from "@/config/constants";
 import { inngest } from "@/inngest/client";
@@ -128,7 +127,7 @@ export const workflowsRouter = createTRPCRouter({
             name: node.type || "unknown",
             type: node.type as NodeType,
             position: node.position,
-            data: (node.data ?? {}) as Prisma.InputJsonValue,
+           data: JSON.parse(JSON.stringify(node.data ?? {})),
           })),
         });
 
