@@ -1,7 +1,18 @@
 import { z } from "zod";
 import type { Node, Edge } from "@xyflow/react";
 import { generateSlug } from "random-word-slugs";
-import { NodeType } from "@prisma/client";
+const NodeType = {
+  INITIAL: "INITIAL",
+  MANUAL_TRIGGER: "MANUAL_TRIGGER",
+  GOOGLE_FORM_TRIGGER: "GOOGLE_FORM_TRIGGER",
+  STRIPE_TRIGGER: "STRIPE_TRIGGER",
+  HTTP_REQUEST: "HTTP_REQUEST",
+  GEMINI: "GEMINI",
+  DISCORD: "DISCORD",
+  WHATSAPP: "WHATSAPP",
+} as const;
+
+type NodeTypeValue = (typeof NodeType)[keyof typeof NodeType];
 import prisma from "@/lib/db";
 import { PAGINATION } from "@/config/constants";
 import { inngest } from "@/inngest/client";
@@ -125,7 +136,7 @@ export const workflowsRouter = createTRPCRouter({
             id: node.id,
             workflowId: id,
             name: node.type || "unknown",
-            type: node.type as NodeType,
+            type: node.type as NodeTypeValue,
             position: node.position,
            data: JSON.parse(JSON.stringify(node.data ?? {})),
           })),
