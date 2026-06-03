@@ -115,7 +115,7 @@ export const workflowsRouter = createTRPCRouter({
         },
       });
 
-      return await prisma.$transaction(async (tx) => {
+      return await prisma.$transaction(async (tx: any) => {
         console.log("NODES:", nodes);
         console.log("EDGES:", edges);
 
