@@ -1,6 +1,20 @@
-import type { Connection, Node } from "@prisma/client";
 import toposort from "toposort";
 import { inngest } from "./client";
+
+type Node = {
+  id: string;
+  type: string;
+  data: unknown;
+  position?: unknown;
+};
+
+type Connection = {
+  id: string;
+  fromNodeId: string;
+  toNodeId: string;
+  fromOutput?: string | null;
+  toInput?: string | null;
+};
 
 export const topologicalSort = (
   nodes: Node[],
@@ -10,9 +24,10 @@ export const topologicalSort = (
     return nodes;
   }
 
-  const edges: [string, string][] = connections.map(
-    (conn) => [conn.fromNodeId, conn.toNodeId]
-  );
+  const edges: [string, string][] = connections.map((conn) => [
+    conn.fromNodeId,
+    conn.toNodeId,
+  ]);
 
   const connectedNodeIds = new Set<string>();
 
@@ -30,9 +45,7 @@ export const topologicalSort = (
   let sortedNodeIds: string[];
 
   try {
-    sortedNodeIds = [
-      ...new Set(toposort(edges)),
-    ];
+    sortedNodeIds = [...new Set(toposort(edges))];
   } catch (error) {
     if (
       error instanceof Error &&
@@ -44,15 +57,12 @@ export const topologicalSort = (
     throw error;
   }
 
-  const nodeMap = new Map(
-    nodes.map((node) => [node.id, node])
-  );
+  const nodeMap = new Map(nodes.map((node) => [node.id, node]));
 
   return sortedNodeIds
     .map((id) => nodeMap.get(id)!)
     .filter(Boolean);
 };
-
 
 export const sendWorkflowExecution = async (data: {
   workflowId: string;
