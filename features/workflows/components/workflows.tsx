@@ -11,6 +11,9 @@ import {
   MoreVerticalIcon,
   TrashIcon,
   WorkflowIcon,
+  PlayIcon,
+  ClockIcon,
+  GitBranchIcon,
 } from "lucide-react";
 
 import { useWorkflowsParams } from "../hooks/use-workflows-params";
@@ -28,7 +31,6 @@ import {
   ErrorView,
   EmptyView,
   EntityList,
-  EntityItem,
 } from "./entity-components";
 
 type WorkflowItem = {
@@ -43,6 +45,7 @@ export const WorkflowsSearch = () => {
 
   return (
     <EntitySearch
+      
       value={params.search}
       onChange={(value) => {
         setParams({
@@ -66,62 +69,87 @@ export const WorkflowsList = () => {
   }
 
   return (
-    <EntityList
-      items={items}
-      emptyView={<WorkflowsEmpty />}
-      getKey={(workflow: WorkflowItem) => workflow.id}
-      renderItem={(workflow: WorkflowItem) => (
-        <EntityItem
+    <div className="space-y-4">
+      {items.map((workflow) => (
+        <a
+          key={workflow.id}
           href={`/workflows/${workflow.id}`}
-          title={workflow.name}
-          subtitle={
-            <>
-              Updated{" "}
-              {new Date(workflow.updatedAt).toLocaleDateString()}
-              {" • "}
-              Created{" "}
-              {new Date(workflow.createdAt).toLocaleDateString()}
-            </>
-          }
-          image={
-            <div className="size-8 rounded-md border flex items-center justify-center">
-              <WorkflowIcon className="size-4 text-muted-foreground" />
+          className="taskorbit-card group flex items-center justify-between p-5"
+        >
+          <div className="flex items-center gap-4">
+            <div className="size-11 rounded-xl bg-white shadow-md flex items-center justify-center">
+              <WorkflowIcon className="size-5 text-purple-600" />
             </div>
-          }
-          actions={
-            <div
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-              }}
+
+            <div>
+              <h3 className="font-bold text-lg text-slate-900">
+                {workflow.name}
+              </h3>
+
+              <p className="text-sm text-muted-foreground">
+                Updated {new Date(workflow.updatedAt).toLocaleDateString()} •
+                Created {new Date(workflow.createdAt).toLocaleDateString()}
+              </p>
+
+              <div className="mt-3 flex flex-wrap gap-2">
+                <span className="taskorbit-badge-green">
+                  Active
+                </span>
+
+                <span className="taskorbit-badge-blue flex items-center gap-1">
+                  <GitBranchIcon className="size-3" />
+                  Steps: 12
+                </span>
+
+                <span className="taskorbit-badge-gray flex items-center gap-1">
+                  <ClockIcon className="size-3" />
+                  Last Run: 5 mins ago
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+            }}
+            className="flex items-center gap-2"
+          >
+            <Button
+              size="sm"
+              className="taskorbit-button hidden md:flex"
             >
-              <DropdownMenu>
-                <DropdownMenuTrigger className="inline-flex size-8 items-center justify-center rounded-md hover:bg-muted">
-                  <MoreVerticalIcon className="size-4" />
-                </DropdownMenuTrigger>
+              <PlayIcon className="mr-1 size-4" />
+              Run
+            </Button>
 
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem
-                    className="text-destructive"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
+            <DropdownMenu>
+              <DropdownMenuTrigger className="inline-flex size-8 items-center justify-center rounded-md hover:bg-white/70">
+                <MoreVerticalIcon className="size-4" />
+              </DropdownMenuTrigger>
 
-                      removeWorkflow.mutate({
-                        id: workflow.id,
-                      });
-                    }}
-                  >
-                    <TrashIcon className="mr-2 size-4" />
-                    Delete
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          }
-        />
-      )}
-    />
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  className="text-destructive"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    removeWorkflow.mutate({
+                      id: workflow.id,
+                    });
+                  }}
+                >
+                  <TrashIcon className="mr-2 size-4" />
+                  Delete
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </a>
+      ))}
+    </div>
   );
 };
 

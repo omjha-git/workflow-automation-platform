@@ -70,7 +70,7 @@ export const AppSidebar = () => {
                 />
 
                 <span className="font-semibold text-lg">
-                  Zapier
+                  TaskOrbit
                 </span>
               </SidebarMenuButton>
             </Link>

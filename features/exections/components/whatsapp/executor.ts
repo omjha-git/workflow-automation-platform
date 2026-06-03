@@ -20,28 +20,29 @@ export type WhatsAppData = {
 
 export const whatsappExecutor: NodeExecutor<WhatsAppData> =
   async ({ data, context }) => {
+    console.log("=== WHATSAPP EXECUTOR STARTED ===");
+    console.log("WhatsApp data:", {
+      variableName: data.variableName,
+      phoneNumberId: data.phoneNumberId,
+      to: data.to,
+      hasAccessToken: Boolean(data.accessToken),
+      message: data.message,
+    });
+
     if (!data.accessToken) {
-      throw new NonRetriableError(
-        "WhatsApp node: Access token is required"
-      );
+      throw new NonRetriableError("WhatsApp node: Access token is required");
     }
 
     if (!data.phoneNumberId) {
-      throw new NonRetriableError(
-        "WhatsApp node: Phone Number ID is required"
-      );
+      throw new NonRetriableError("WhatsApp node: Phone Number ID is required");
     }
 
     if (!data.to) {
-      throw new NonRetriableError(
-        "WhatsApp node: Recipient number is required"
-      );
+      throw new NonRetriableError("WhatsApp node: Recipient number is required");
     }
 
     if (!data.message) {
-      throw new NonRetriableError(
-        "WhatsApp node: Message is required"
-      );
+      throw new NonRetriableError("WhatsApp node: Message is required");
     }
 
     const to = data.to.replace(/\D/g, "");
@@ -50,25 +51,31 @@ export const whatsappExecutor: NodeExecutor<WhatsAppData> =
       Handlebars.compile(data.message)(context)
     ).slice(0, 4000);
 
+    console.log("WhatsApp sending to:", to);
+    console.log("WhatsApp message:", message);
+
     try {
-      const result = await ky
-        .post(
-          `https://graph.facebook.com/v20.0/${data.phoneNumberId}/messages`,
-          {
-            headers: {
-              Authorization: `Bearer ${data.accessToken}`,
+      const response = await ky.post(
+        `https://graph.facebook.com/v20.0/${data.phoneNumberId}/messages`,
+        {
+          headers: {
+            Authorization: `Bearer ${data.accessToken}`,
+          },
+          json: {
+            messaging_product: "whatsapp",
+            to,
+            type: "text",
+            text: {
+              body: message,
             },
-            json: {
-              messaging_product: "whatsapp",
-              to,
-              type: "text",
-              text: {
-                body: message,
-              },
-            },
-          }
-        )
-        .json();
+          },
+        }
+      );
+
+      const result = await response.json();
+
+      console.log("WhatsApp response status:", response.status);
+      console.log("WhatsApp response body:", result);
 
       const variableName = data.variableName || "whatsapp";
 
@@ -82,20 +89,35 @@ export const whatsappExecutor: NodeExecutor<WhatsAppData> =
         },
       };
     } catch (error) {
+      console.log("=== WHATSAPP ERROR ===");
+
       if (error instanceof HTTPError) {
         let errorMessage = error.message;
+        let errorBody: unknown = null;
 
         try {
-          const errorBody = await error.response.json() as {
-            error?: {
-              message?: string;
-            };
-          };
+          errorBody = await error.response.json();
+          console.log("WhatsApp error status:", error.response.status);
+          console.log("WhatsApp error body:", errorBody);
 
-          errorMessage =
-            errorBody.error?.message || errorMessage;
+          if (
+            typeof errorBody === "object" &&
+            errorBody !== null &&
+            "error" in errorBody
+          ) {
+            const body = errorBody as {
+              error?: {
+                message?: string;
+                code?: number;
+                type?: string;
+                fbtrace_id?: string;
+              };
+            };
+
+            errorMessage = body.error?.message || errorMessage;
+          }
         } catch {
-          // body already read or not JSON
+          console.log("Could not read WhatsApp error body");
         }
 
         throw new NonRetriableError(
@@ -103,6 +125,7 @@ export const whatsappExecutor: NodeExecutor<WhatsAppData> =
         );
       }
 
+      console.log(error);
       throw error;
     }
   };

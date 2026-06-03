@@ -1,6 +1,6 @@
 # Workflow Automation Platform 🚀
 
-A modern **Zapier-inspired workflow automation platform** built with **Next.js, TypeScript, Prisma, PostgreSQL, React Flow, TRPC, Inngest, and Tailwind CSS**. Create visual workflows, connect triggers and actions, and automate tasks across multiple services.
+A modern **TaskOrbit-inspired workflow automation platform** built with **Next.js, TypeScript, Prisma, PostgreSQL, React Flow, TRPC, Inngest, and Tailwind CSS**. Create visual workflows, connect triggers and actions, and automate tasks across multiple services.
 
 ![Workflow Automation Platform](https://img.shields.io/badge/Next.js-16-black?logo=next.js)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)

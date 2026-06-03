@@ -19,7 +19,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Zapier Clone",
+  title: "TaskOrbit Clone",
   description: "Automation platform",
 };
 

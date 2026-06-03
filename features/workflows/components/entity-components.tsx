@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from "next/link";
@@ -9,21 +8,13 @@ import {
   CardDescription,
   CardTitle,
 } from "@/components/ui/card";
-
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+
 import {
   AlertTriangleIcon,
   Loader2Icon,
-  PlusIcon,
   SearchIcon,
   PackageOpenIcon,
 } from "lucide-react";
@@ -36,6 +27,7 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
+
 type EntityHeaderProps = {
   title: string;
   description?: string;
@@ -56,16 +48,24 @@ export const EntityHeader = ({
   return (
     <div className="flex flex-row items-center justify-between gap-x-4">
       <div className="flex flex-col">
-        <h1 className="text-lg md:text-xl font-semibold">{title}</h1>
+        <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 via-pink-500 to-orange-400 bg-clip-text text-transparent">
+          {title}
+        </h1>
 
         {description && (
-          <p className="text-sm text-muted-foreground">{description}</p>
+          <p className="text-sm text-slate-600">{description}</p>
         )}
       </div>
 
-      <Button onClick={onNew} disabled={disabled || isCreating}>
-        {isCreating ? "Creating..." : `+ ${newButtonLabel}`}
-      </Button>
+      {onNew && (
+        <Button
+          onClick={onNew}
+          disabled={disabled || isCreating}
+          className="rounded-xl border-0 bg-gradient-to-r from-purple-600 via-pink-500 to-orange-400 text-white shadow-lg shadow-pink-500/30 hover:opacity-90"
+        >
+          {isCreating ? "Creating..." : `+ ${newButtonLabel}`}
+        </Button>
+      )}
     </div>
   );
 };
@@ -76,6 +76,7 @@ type EntityContainerProps = {
   search?: React.ReactNode;
   pagination?: React.ReactNode;
 };
+
 export const EntityContainer = ({
   children,
   header,
@@ -83,7 +84,7 @@ export const EntityContainer = ({
   pagination,
 }: EntityContainerProps) => {
   return (
-    <div className="flex flex-col gap-y-6 p-6">
+    <div className="flex flex-col gap-y-7 p-8">
       {header}
       {search}
       {children}
@@ -91,6 +92,7 @@ export const EntityContainer = ({
     </div>
   );
 };
+
 interface EntitySearchProps {
   value: string;
   onChange: (value: string) => void;
@@ -104,30 +106,13 @@ export const EntitySearch = ({
 }: EntitySearchProps) => {
   return (
     <div className="relative ml-auto">
-      <SearchIcon
-        className="
-          size-3.5
-          absolute
-          left-3
-          top-1/2
-          -translate-y-1/2
-          text-muted-foreground
-        "
-      />
+      <SearchIcon className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-pink-500" />
 
       <Input
-        className="
-          max-w-[200px]
-          bg-background
-          shadow-none
-          border-border
-          pl-8
-        "
+        className="h-11 max-w-[260px] rounded-xl border-pink-300 bg-white/80 pl-10 shadow-lg shadow-purple-500/10 backdrop-blur-md transition-all focus:border-purple-500 focus:ring-2 focus:ring-purple-300"
         placeholder={placeholder}
         value={value}
-        onChange={(e) =>
-          onChange(e.target.value)
-        }
+        onChange={(e) => onChange(e.target.value)}
       />
     </div>
   );
@@ -146,30 +131,22 @@ export const LoadingView = ({
   message,
 }: LoadingViewProps) => {
   return (
-    <div className="flex justify-center items-center h-full flex-1 flex-col gap-y-4">
-      <Loader2Icon className="size-6 animate-spin text-muted-foreground" />
+    <div className="flex h-full flex-1 flex-col items-center justify-center gap-y-4">
+      <Loader2Icon className="size-6 animate-spin text-purple-600" />
 
-      <p className="text-sm text-muted-foreground">
+      <p className="text-sm text-slate-600">
         {message || `Loading ${entity}`}
       </p>
     </div>
   );
 };
 
-export const ErrorView = ({
-  message,
-}: StateViewProps) => {
+export const ErrorView = ({ message }: StateViewProps) => {
   return (
-    <div className="flex justify-center items-center h-full flex-1 flex-col gap-y-4">
-      <AlertTriangleIcon
-        className="size-6 text-primary"
-      />
+    <div className="flex h-full flex-1 flex-col items-center justify-center gap-y-4">
+      <AlertTriangleIcon className="size-6 text-red-500" />
 
-      {!!message && (
-        <p className="text-sm text-muted-foreground">
-          {message}
-        </p>
-      )}
+      {!!message && <p className="text-sm text-slate-600">{message}</p>}
     </div>
   );
 };
@@ -178,12 +155,9 @@ interface EmptyViewProps extends StateViewProps {
   onNew?: () => void;
 }
 
-export const EmptyView = ({
-  message,
-  onNew,
-}: EmptyViewProps) => {
+export const EmptyView = ({ message, onNew }: EmptyViewProps) => {
   return (
-    <Empty className="min-h-[400px] border border-dashed bg-white">
+    <Empty className="min-h-[400px] rounded-3xl border border-dashed border-purple-300 bg-white/70 shadow-xl shadow-purple-500/10 backdrop-blur-md">
       <EmptyHeader>
         <EmptyMedia variant="icon">
           <PackageOpenIcon />
@@ -191,14 +165,15 @@ export const EmptyView = ({
 
         <EmptyTitle>No items</EmptyTitle>
 
-        <EmptyDescription>
-          {message}
-        </EmptyDescription>
+        <EmptyDescription>{message}</EmptyDescription>
       </EmptyHeader>
 
       {onNew && (
         <EmptyContent>
-          <Button onClick={onNew}>
+          <Button
+            onClick={onNew}
+            className="rounded-xl border-0 bg-gradient-to-r from-purple-600 via-pink-500 to-orange-400 text-white shadow-lg shadow-pink-500/30"
+          >
             Add item
           </Button>
         </EmptyContent>
@@ -215,7 +190,6 @@ interface EntityListProps<T> {
   className?: string;
 }
 
-
 export function EntityList<T>({
   items,
   renderItem,
@@ -224,11 +198,7 @@ export function EntityList<T>({
   className,
 }: EntityListProps<T>) {
   if (items.length === 0 && emptyView) {
-    return (
-      <div>
-        {emptyView}
-      </div>
-    );
+    return <div>{emptyView}</div>;
   }
 
   return (
@@ -241,6 +211,7 @@ export function EntityList<T>({
     </div>
   );
 }
+
 interface EntityItemProps {
   href: string;
   title: string;
@@ -251,6 +222,7 @@ interface EntityItemProps {
   isRemoving?: boolean;
   className?: string;
 }
+
 export const EntityItem = ({
   href,
   title,
@@ -265,23 +237,22 @@ export const EntityItem = ({
     <Link href={href} prefetch>
       <Card
         className={cn(
-          "p-4 shadow-none hover:shadow cursor-pointer",
-          isRemoving &&
-            "opacity-50 cursor-not-allowed",
+          "cursor-pointer rounded-3xl border border-purple-200 bg-gradient-to-r from-cyan-50 via-purple-50 to-pink-50 p-5 shadow-xl shadow-purple-500/10 transition-all duration-300 hover:-translate-y-1 hover:shadow-pink-500/20",
+          isRemoving && "cursor-not-allowed opacity-50",
           className
         )}
       >
         <CardContent className="flex items-center justify-between p-0">
-          <div className="flex items-center gap-x-3">
+          <div className="flex items-center gap-x-4">
             {image}
 
             <div>
-              <CardTitle>
+              <CardTitle className="text-lg font-bold text-slate-800">
                 {title}
               </CardTitle>
 
               {subtitle && (
-                <CardDescription className="text-xs">
+                <CardDescription className="text-sm text-slate-500">
                   {subtitle}
                 </CardDescription>
               )}
@@ -289,15 +260,15 @@ export const EntityItem = ({
           </div>
 
           {(actions || onRemove) && (
-  <div
-    onClick={(e) => {
-      e.preventDefault();
-      e.stopPropagation();
-    }}
-  >
-    {actions}
-  </div>
-)}
+            <div
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+              }}
+            >
+              {actions}
+            </div>
+          )}
         </CardContent>
       </Card>
     </Link>
